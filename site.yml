@@ -1,0 +1,10 @@
+---
+
+- name: Setup TPC VMs
+  hosts: all
+  remote_user: {user_id}
+  become: yes
+  become_method: sudo
+
+  roles:
+    - service-account

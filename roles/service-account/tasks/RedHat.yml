@@ -1,0 +1,18 @@
+---
+- name: Create new service account
+  user:
+   name: "{{service_account}}"
+   create_home: no
+   expires: 99999
+   generate_ssh_key: no
+
+- name: create application root directory
+  file:
+    path: /appl/{{app_name}}
+    state: directory
+    recurse: yes
+    owner: "{{service_account}}"
+
+
+
+
