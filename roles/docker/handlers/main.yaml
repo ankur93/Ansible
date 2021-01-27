@@ -1,0 +1,9 @@
+---
+- name: Start docker
+  service: name=docker state=started
+
+- name: Restart docker
+  service: name=docker state=restarted
+
+- name: Enable docker
+  shell: systemctl enable docker

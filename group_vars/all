@@ -1,4 +1,6 @@
 ---
 
+docker_ce_repo_url: http://download.docker.com/linux/centos/docker-ce.repo
+docker_compose_repo_url: https://github.com/docker/compose/releases/download/1.26.2/docker-compose-Linux-x86_64
 service_account: svc-account
 app_name: my-app

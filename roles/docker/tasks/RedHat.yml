@@ -1,0 +1,55 @@
+---
+- name: Install yum-utils
+  yum:
+   name: yum-utils
+   state: present
+
+- name: Add Docker repo
+  get_url:
+      url: "{{docker_ce_repo_url}}"
+      dest: /etc/yum.repos.d/docer-ce.repo
+
+- name: Install Docker
+  yum:
+    name: docker-ce,docker-ce-cli,containerd.io
+    state: latest
+  become: yes
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Add user service account to docker group
+  user:
+    name: "{{service_account}}"
+    groups: docker
+    append: yes
+  become: yes
+
+- name: Prepare docker daemon configuration
+  copy:
+    src: files/daemon.json
+    dest: /etc/docker/daemon.json
+
+- name: Enable docker
+  shell: systemctl enable docker
+
+- name: Verify if docker is running fine
+  command: docker run hello-world
+
+- name: Add docker-compose repo
+  get_url:
+    url: "{{docker_compose_repo_url}}"
+    dest: /usr/local/bin/docker-compose
+  become: yes
+
+- name: Give Permissions to docker compose
+  file:
+    dest: /usr/local/bin/docker-compose
+    mode: a+x
+
+- name: Restart docker
+  service: name=docker state=restarted

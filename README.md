@@ -1,4 +1,6 @@
-# Ansible Playbook for setting up service account
+# Ansible Playbook for setting following roles:
+1. service account, 
+1. Docker
 
 ## Running this script on local machine
 
