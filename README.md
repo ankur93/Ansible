@@ -1,6 +1,7 @@
 # Ansible Playbook for setting following roles:
 1. service account, 
 1. Docker
+1. NVM
 
 ## Running this script on local machine
 

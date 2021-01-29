@@ -1,0 +1,52 @@
+---
+
+- name: Check if NVM is installed
+  stat: path="/home/{{service_account}}/.nvm"
+  register: nvm_install_path
+  changed_when: False
+
+- name: Install Git
+  yum:
+    name: git
+    state: present
+  become: yes
+  when: not nvm_install_path.stat.exists
+
+- name: Install NVM
+  git:
+    repo: "{{nvm_repo_url}}"
+    dest: "/home/{{service_account}}/.nvm"
+    version: "{{nvm_version}}"
+  when: not nvm_install_path.stat.exists
+
+- name: Set permissions for nvm directory
+  file:
+    state: directory
+    recurse: yes
+    path: "/home/{{service_account}}/.nvm"
+    owner: "{{service_account}}"
+    group: "{{service_account}}"
+  when: not nvm_install_path.stat.exists
+
+- name: Source nvm in /home/{{ service_account }}/.bashrc
+  lineinfile: >
+    dest=/home/{{service_account}}/.bashrc
+    line='export NVM_DIR="/home/{{service_account}}/.nvm" \n
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"   # This loads nvm \n
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"   # This loads nvm bash_completion'
+    create=yes
+  when: not nvm_install_path.stat.exists
+
+- name: Install node and set version
+  shell: "source /home/{{service_account}}/.bashrc; nvm install {{node_version}}"
+  args:
+    executable: /bin/bash
+  become: yes
+  when: not nvm_install_path.stat.exists
+
+- name: Use installed version of node
+  shell:  "source /home/{{service_account}}/.bashrc; nvm alias default {{node_version}}"
+  args:
+    executable: /bin/bash
+  become: yes
+  when: not nvm_install_path.stat.exists
