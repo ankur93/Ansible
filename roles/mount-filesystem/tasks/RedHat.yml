@@ -1,0 +1,32 @@
+---
+
+- name: Locate and verify the physical volume {{ drive_name }}
+  shell: 'lsblk | grep -e {{ drive_name }}'
+  register: disk_status
+  become: yes
+  failed_when: "drive_name not in disk_status.stdout"
+
+- name: Create logical volume group {{ volume_group }}
+  community.general.lvg:
+    vg: "{{ volume_group }}"
+    pvs: "/dev/{{ drive_name }}"
+
+- name: Create logical volume {{ logical_volume }}
+  community.general.lvol:
+    vg: "{{ volume_group }}"
+    lv: "{{ logical_volume }}"
+    size: 100%VG
+    force: yes
+
+- name: Create a XFS filesystem on /dev/{{ drive_name }}
+  community.general.filesystem:
+    fstype: xfs
+    dev: "/dev/{{ volume_group }}/{{ logical_volume }}"
+    force: yes
+
+- name: Mount filesystem and bind to logical volume
+  ansible.posix.mount:
+    path: "/appl/{{ mount_point }}"
+    fstype: xfs
+    state: mounted
+    src: "/dev/{{ volume_group }}/{{ logical_volume }}"

@@ -8,3 +8,6 @@
 
   roles:
     - service-account
+    - nvm
+    - docker
+    - mount-filesystem

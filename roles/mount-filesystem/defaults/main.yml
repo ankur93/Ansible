@@ -1,0 +1,7 @@
+---
+
+#drive_name must match the new HDD allocated to the VM
+drive_name: sdb
+volume_group: vg_logging
+logical_volume: lv_logging
+mount_point: logs
